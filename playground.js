@@ -1,80 +1,95 @@
 
-const promise = fetch('https://jsonplaceholder.typicode.com/todos/1');
+// setTimeout(() => {
+//   console.log('hello');
+//   setTimeout(() => {
+//     console.log('How are you?');
+//     setTimeout(() => {
+//       console.log('Are you here?');
+//       setTimeout(() => {
+//         console.log('ok');
+//         setTimeout(() => {
+//           console.log('buy');
+//         }, 3000);
+//       }, 3000);
+//     }, 3000);
+//   }, 3000);
+// }, 2000);
 
-let data;
+// pending -> resolved, reject.
 
-promise.then((res) => {
-  return res.json();
-}).then(res => {
-  data = res;
-  return data.title;
-})
-.then(res => {
-  data
-}).then(res => {
-})
-.catch((err) => {
-  console.log('some error', err);
-})
-
-
-const ownPromise = new Promise((resolve, reject) => {
-  setTimeout(() => {
-    resolve('yeaaaa resolved')
-  }, 3000);
-});
-
-function onResolve(data) {
-  // console.log('data: ', data);
-}
-ownPromise.then(onResolve)
-  .catch((err) => {
-  // console.log('some error', err);
-})
-
-
-
-
-
-const getPage = () => {
+function defer(delay) {
   return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, delay);
+  });
+}
+
+// defer(2000)
+//   .then(() => {
+//     console.log('hello');
+//     return defer(3000);
+//   }).then(() => {
+//     console.log('How are you?');
+//     return defer(2000);
+//   }).then(() => {
+//     console.log('Are you here?');
+//     return defer(1000);
+//   }).then(() => {
+//     console.log('ok');
+//     return defer(500);
+//   }).then(() => {
+//     console.log('buy');
+//   });
+
+// async function dialog() {
+//   await defer(2000)
+//   console.log('hello');
+//   await defer(3000);
+//   console.log('How are you?');
+//   await defer(2000);
+//   console.log('Are you here?');
+//   await defer(1000);
+//   console.log('ok');
+//   await defer(500);
+//   console.log('buy');
+// }
+
+// dialog();
+
+function ownFetch(url) {
+  return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
-    xhr.open('GET', 'https://jsonplaceholder.typicode.com/');
+    xhr.open('GET', url);
   
-    xhr.onload = function() {
-      resolve(this.response);
-    }
+    xhr.addEventListener('load', (event) => {
+      resolve(xhr.response);
+    });
+
+    xhr.addEventListener('error', (err) => {
+      reject(err);
+    });
+
     xhr.send();
   })
 }
 
-getPage().then((res) => {
-  // console.log('res: ', res);
-});
-
-
-
-// Promise.all
-// Promise.race
-// Promise.resolve
-
-
-
-
-Promise.all([getPage(), promise])
-  .then((res) => {
-    // console.log('res: ', res);
-  });
-
-
-const asyncFunc = async () => {
+async function getSmth() {
   try {
-    // console.log('begin');
-    const result = await Promise.all([ownPromise, getPage()]);
-    // console.log('result', result);
+    const res = await ownFetch('https://google.com');
   } catch(err) {
     console.log('err: ', err);
   }
 }
 
-asyncFunc();
+// getSmth();
+
+// ownFetch('https://jsonplaceholder.typicode.com/')
+//   .then((res) => {
+//     console.log('first res');
+//   }).catch((err) => {
+//     console.dir(err);
+//     console.log('Catch2 err: ', err);
+//   }).finally(() => {
+//     console.log('always called');
+//   })
